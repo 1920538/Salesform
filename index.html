@@ -785,6 +785,8 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Creating Order...';
 
+            console.log('Form submitted, preparing data...');
+
             const formData = new FormData(e.target);
             const orderData = {
                 customer: {
@@ -804,7 +806,6 @@
                     applicationType: formData.get('applicationType'),
                     projectSize: formData.get('projectSize'),
                     timeline: formData.get('timeline'),
-                    customerType: formData.get('customerType'),
                     leadType: formData.get('leadType')
                 },
                 order: {
@@ -817,19 +818,25 @@
                 }
             };
 
+            console.log('Order data prepared:', orderData);
+
             // Send to Airtable
             sendToAirtable(orderData)
                 .then(response => {
+                    console.log('Airtable response:', response);
                     if (response.success) {
-                        // Redirect to success page
-                        window.location.href = 'success.html';
+                        showSuccess(`Order ${orderData.order.orderNumber} created successfully!`);
+                        // Optional: redirect to success page after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = 'success.html';
+                        }, 2000);
                     } else {
                         throw new Error(response.error || 'Failed to create order');
                     }
                 })
                 .catch(error => {
                     console.error('Error creating order:', error);
-                    showError('Failed to create order. Please try again.');
+                    showError(`Failed to create order: ${error.message}`);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Create Sample Order';
                 });
