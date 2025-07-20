@@ -33,6 +33,37 @@
             text-align: center;
             margin-bottom: 30px;
             box-shadow: 0 4px 15px rgba(124, 179, 66, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            position: relative;
+            z-index: 2;
+            margin: 0 0 10px 0;
+        }
+
+        .header p {
+            position: relative;
+            z-index: 2;
+            margin: 0;
         }
 
         .header h1 {
@@ -133,16 +164,20 @@
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
 
         .sample-card:hover {
             border-color: #7CB342;
-            box-shadow: 0 4px 12px rgba(124, 179, 66, 0.2);
+            box-shadow: 0 6px 20px rgba(124, 179, 66, 0.15);
+            transform: translateY(-2px);
         }
 
         .sample-card.selected {
             border-color: #7CB342;
             background: linear-gradient(135deg, #f8fcf4 0%, #f1f8e9 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 179, 66, 0.2);
         }
 
         .sample-card.selected::before {
@@ -329,6 +364,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="logo">
+                <img src="https://www.integriturf.com/wp-content/themes/integriturf/assets/images/integritruf-800px_optimized.gif" alt="IntegraTurf Logo" style="max-width: 200px; height: auto; filter: brightness(0) invert(1);">
+            </div>
             <h1>IntegraTurf Sales Order Form</h1>
             <p>Create sample orders for customers - Up to 8 turf samples per order</p>
         </div>
@@ -752,59 +790,89 @@
         }
 
         async function sendToAirtable(orderData) {
-            // Configuration - You'll need to update these values
-            const AIRTABLE_API_KEY = 'YOUR_AIRTABLE_API_KEY'; // Get from Airtable Account page
-            const AIRTABLE_BASE_ID = 'YOUR_BASE_ID'; // Get from Airtable API docs for your base
-            const AIRTABLE_TABLE_NAME = 'Orders'; // Your table name in Airtable
-
-            // Prepare samples as a formatted string for Airtable
-            const samplesText = orderData.order.samples.map(sample => 
-                `• ${sample.name} - ${sample.specs}`
-            ).join('\n');
-
-            // Prepare shipping address as formatted text
-            const shippingText = `${orderData.customer.name}
-${orderData.customer.company ? orderData.customer.company + '\n' : ''}${orderData.shipping.address}
-${orderData.shipping.city}, ${orderData.shipping.state} ${orderData.shipping.zipCode}`;
-
-            const airtableData = {
-                fields: {
-                    "Order Number": orderData.order.orderNumber,
-                    "Customer Name": orderData.customer.name,
-                    "Customer Email": orderData.customer.email,
-                    "Customer Phone": orderData.customer.phone,
-                    "Company": orderData.customer.company || '',
-                    "Shipping Address": shippingText,
-                    "Sales Rep": orderData.order.salesRep,
-                    "Project Type": orderData.order.projectType || '',
-                    "Order Notes": orderData.order.notes || '',
-                    "Samples Selected": samplesText,
-                    "Sample Count": orderData.order.samples.length,
-                    "Order Date": orderData.order.orderDate,
-                    "Status": "Pending",
-                    "Created At": orderData.order.timestamp
-                }
-            };
-
+            // Configuration - Your actual Airtable credentials
+            const AIRTABLE_API_KEY = 'patEWOkdI192s5Eks.7186474ad2b2334984ebfc235acf9b31cb34d44289ef64c3bb7bc773c84d4409';
+            const AIRTABLE_BASE_ID = 'appySt7Fu5pPyR4jy'; // Your base ID from the documentation
+            
             try {
-                const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`, {
+                // Step 1: Create Customer Record
+                const customerData = {
+                    records: [{
+                        fields: {
+                            "Name": orderData.customer.name,
+                            "Business Name": orderData.customer.company || '',
+                            "Phone Number": orderData.customer.phone,
+                            "Email Address": orderData.customer.email,
+                            "Street Address": orderData.shipping.address,
+                            "City": orderData.shipping.city,
+                            "State": orderData.shipping.state,
+                            "Zip Code": orderData.shipping.zipCode,
+                            "Sales Rep Selection": orderData.order.salesRep,
+                            "Date": new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+                            "Customer Type": orderData.order.projectType === "Commercial Landscape" ? "Commercial" : "Residential"
+                        }
+                    }]
+                };
+
+                const customerResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Customers`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(airtableData)
+                    body: JSON.stringify(customerData)
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error?.message || 'Airtable API error');
+                if (!customerResponse.ok) {
+                    const errorData = await customerResponse.json();
+                    throw new Error(errorData.error?.message || 'Failed to create customer record');
                 }
 
-                const result = await response.json();
-                console.log('Order created in Airtable:', result);
+                const customerResult = await customerResponse.json();
+                const customerRecordId = customerResult.records[0].id;
 
-                return { success: true, data: result };
+                // Step 2: Create Sample Order Record
+                const samplesText = orderData.order.samples.map(sample => sample.name);
+                
+                const sampleOrderData = {
+                    records: [{
+                        fields: {
+                            "customerName": orderData.customer.name,
+                            "customerEmail": orderData.customer.email,
+                            "phone": orderData.customer.phone,
+                            "company": orderData.customer.company || '',
+                            "salesRep": orderData.order.salesRep,
+                            "address": `${orderData.shipping.address}, ${orderData.shipping.city}, ${orderData.shipping.state} ${orderData.shipping.zipCode}`,
+                            "Notes": orderData.order.notes || '',
+                            "Sample Selection": samplesText,
+                            "Order Date": orderData.order.orderDate,
+                            "Order Status": "Order Confirmed",
+                            "Customers 2": [customerRecordId]
+                        }
+                    }]
+                };
+
+                const sampleOrderResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Sample Orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(sampleOrderData)
+                });
+
+                if (!sampleOrderResponse.ok) {
+                    const errorData = await sampleOrderResponse.json();
+                    throw new Error(errorData.error?.message || 'Failed to create sample order record');
+                }
+
+                const sampleOrderResult = await sampleOrderResponse.json();
+                console.log('Order created successfully:', {
+                    customer: customerResult,
+                    sampleOrder: sampleOrderResult
+                });
+
+                return { success: true, data: { customer: customerResult, sampleOrder: sampleOrderResult } };
             } catch (error) {
                 console.error('Airtable error:', error);
                 return { success: false, error: error.message };
@@ -812,9 +880,11 @@ ${orderData.shipping.city}, ${orderData.shipping.state} ${orderData.shipping.zip
         }
 
         function generateOrderNumber() {
-            const prefix = 'IT-' + new Date().getFullYear() + '-';
-            const random = Math.floor(Math.random() * 9000) + 1000;
-            return prefix + random;
+            const prefix = 'IT-';
+            const year = new Date().getFullYear();
+            const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+            const random = Math.floor(Math.random() * 999) + 1; // 1-999
+            return `${prefix}${year}-${timestamp}${random.toString().padStart(3, '0')}`;
         }
 
         function generateEmailContent(data) {
