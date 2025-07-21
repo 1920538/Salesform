@@ -832,8 +832,8 @@
 
             console.log('Order data prepared:', orderData);
 
-            // Send to Airtable
-            sendToAirtable(orderData)
+            // Send to Make.com
+            sendToMake(orderData)
                 .then(response => {
                     console.log('Airtable response:', response);
                     if (response.success) {
