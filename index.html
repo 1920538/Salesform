@@ -365,7 +365,17 @@
     <div class="container">
         <div class="header">
             <div class="logo">
-                <img src="https://www.integriturf.com/wp-content/themes/integriturf/assets/images/integritruf-800px_optimized.gif" alt="IntegraTurf Logo" style="max-width: 200px; height: auto; filter: brightness(0) invert(1);">
+                <svg width="300" height="80" viewBox="0 0 300 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Diamond background -->
+                    <path d="M5 40L25 10L45 40L25 70L5 40Z" fill="#9CD044"/>
+                    <!-- Grass blades -->
+                    <path d="M15 45L20 15L25 45L20 50L15 45Z" fill="#7CB342"/>
+                    <path d="M20 50L25 20L30 50L25 55L20 50Z" fill="#8BC34A"/>
+                    <path d="M25 45L30 15L35 45L30 50L25 45Z" fill="#7CB342"/>
+                    <!-- Text -->
+                    <text x="55" y="30" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">INTEGRITURF</text>
+                    <text x="55" y="50" font-family="Arial, sans-serif" font-size="10" fill="white" opacity="0.9">SYNTHETIC TURF PRODUCTS</text>
+                </svg>
             </div>
             <h1>IntegraTurf Sales Order Form</h1>
             <p>Create sample orders for customers - Up to 8 turf samples per order</p>
@@ -832,7 +842,7 @@
 
             console.log('Order data prepared:', orderData);
 
-            // Send to Make.com
+            // Send to Make.com webhook
             sendToMake(orderData)
                 .then(response => {
                     console.log('Airtable response:', response);
