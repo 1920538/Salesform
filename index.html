@@ -908,34 +908,67 @@
 
             const formData = new FormData(e.target);
             const orderData = {
-                customer: {
-                    name: formData.get('customerName'),
-                    email: formData.get('customerEmail'),
-                    phone: formData.get('customerPhone'),
-                    company: formData.get('company')
-                },
-                shipping: {
-                    address: formData.get('shippingAddress'),
-                    address2: formData.get('shippingAddress2'),
-                    city: formData.get('city'),
-                    state: formData.get('state'),
-                    zipCode: formData.get('zipCode')
-                },
-                project: {
-                    applicationType: formData.get('applicationType'),
-                    projectSize: formData.get('projectSize'),
-                    timeline: formData.get('timeline'),
-                    customerType: formData.get('customerType'),
-                    leadType: formData.get('leadType')
-                },
-                order: {
-                    salesRep: formData.get('salesRep'),
-                    notes: formData.get('notes'),
-                    samples: selectedSamples,
-                    orderNumber: generateOrderNumber(),
-                    orderDate: new Date().toLocaleDateString(),
-                    timestamp: new Date().toISOString()
-                }
+                // Flatten the structure for better Make.com compatibility
+                customerName: formData.get('customerName'),
+                customerEmail: formData.get('customerEmail'),
+                customerPhone: formData.get('customerPhone'),
+                company: formData.get('company') || '',
+                
+                shippingAddress: formData.get('shippingAddress'),
+                shippingAddress2: formData.get('shippingAddress2') || '',
+                city: formData.get('city'),
+                state: formData.get('state'),
+                zipCode: formData.get('zipCode'),
+                
+                applicationType: formData.get('applicationType') || '',
+                projectSize: formData.get('projectSize') || '',
+                timeline: formData.get('timeline') || '',
+                customerType: formData.get('customerType') || '',
+                leadType: formData.get('leadType') || '',
+                
+                salesRep: formData.get('salesRep'),
+                notes: formData.get('notes') || '',
+                orderNumber: generateOrderNumber(),
+                orderDate: new Date().toLocaleDateString(),
+                timestamp: new Date().toISOString(),
+                
+                // Convert samples array to individual fields for Make.com
+                samplesCount: selectedSamples.length,
+                samplesText: selectedSamples.map(sample => sample.name).join(', '),
+                samplesDetailed: selectedSamples.map(sample => `${sample.name} (${sample.specs}) - ${sample.price}`).join(' | '),
+                
+                // Individual sample fields (up to 8)
+                sample1: selectedSamples[0] ? selectedSamples[0].name : '',
+                sample1Specs: selectedSamples[0] ? selectedSamples[0].specs : '',
+                sample1Price: selectedSamples[0] ? selectedSamples[0].price : '',
+                
+                sample2: selectedSamples[1] ? selectedSamples[1].name : '',
+                sample2Specs: selectedSamples[1] ? selectedSamples[1].specs : '',
+                sample2Price: selectedSamples[1] ? selectedSamples[1].price : '',
+                
+                sample3: selectedSamples[2] ? selectedSamples[2].name : '',
+                sample3Specs: selectedSamples[2] ? selectedSamples[2].specs : '',
+                sample3Price: selectedSamples[2] ? selectedSamples[2].price : '',
+                
+                sample4: selectedSamples[3] ? selectedSamples[3].name : '',
+                sample4Specs: selectedSamples[3] ? selectedSamples[3].specs : '',
+                sample4Price: selectedSamples[3] ? selectedSamples[3].price : '',
+                
+                sample5: selectedSamples[4] ? selectedSamples[4].name : '',
+                sample5Specs: selectedSamples[4] ? selectedSamples[4].specs : '',
+                sample5Price: selectedSamples[4] ? selectedSamples[4].price : '',
+                
+                sample6: selectedSamples[5] ? selectedSamples[5].name : '',
+                sample6Specs: selectedSamples[5] ? selectedSamples[5].specs : '',
+                sample6Price: selectedSamples[5] ? selectedSamples[5].price : '',
+                
+                sample7: selectedSamples[6] ? selectedSamples[6].name : '',
+                sample7Specs: selectedSamples[6] ? selectedSamples[6].specs : '',
+                sample7Price: selectedSamples[6] ? selectedSamples[6].price : '',
+                
+                sample8: selectedSamples[7] ? selectedSamples[7].name : '',
+                sample8Specs: selectedSamples[7] ? selectedSamples[7].specs : '',
+                sample8Price: selectedSamples[7] ? selectedSamples[7].price : ''
             };
 
             console.log('Order data prepared:', orderData);
