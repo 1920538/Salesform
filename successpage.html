@@ -336,23 +336,25 @@
         function loadOrderDetails() {
             const urlParams = new URLSearchParams(window.location.search);
             
-            // Try to get from URL parameters first
-            const orderNumber = urlParams.get('orderNumber') || localStorage.getItem('lastOrderNumber') || 'IT-2025-' + Date.now().toString().slice(-6);
-            const samplesCount = urlParams.get('samplesCount') || localStorage.getItem('lastSamplesCount') || '0';
+            // Try to get from localStorage first (from the order form)
+            const orderNumber = localStorage.getItem('lastOrderNumber') || urlParams.get('orderNumber') || 'IT-2025-' + Date.now().toString().slice(-6);
+            const samplesCount = localStorage.getItem('lastSamplesCount') || urlParams.get('samplesCount') || '0';
+            const orderDate = localStorage.getItem('lastOrderDate') || new Date().toLocaleDateString();
             
             // Update the display
             document.getElementById('orderNumber').textContent = orderNumber;
-            document.getElementById('orderDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('orderDate').textContent = orderDate;
             document.getElementById('samplesCount').textContent = samplesCount + ' samples';
             
-            // Clear localStorage after displaying
-            localStorage.removeItem('lastOrderNumber');
-            localStorage.removeItem('lastSamplesCount');
+            // Don't clear localStorage yet - wait until user clicks "Submit Another Order"
         }
 
         function createAnotherOrder() {
-            // Navigate back to the order form
-            window.location.href = 'index.html'; // Update this to your form page URL
+            // Clear any stored data to ensure fresh form
+            localStorage.clear();
+            
+            // Navigate back to the order form with a fresh start
+            window.location.href = 'index.html';
         }
 
         function accessDashboard() {
