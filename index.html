@@ -520,8 +520,6 @@
                     <button type="button" class="filter-btn" data-filter="landscape">Landscape Turf</button>
                     <button type="button" class="filter-btn" data-filter="putting">Putting Greens</button>
                     <button type="button" class="filter-btn" data-filter="pet">Pet Turf</button>
-                    <!-- ACCESSORIES FILTER HIDDEN FOR SAMPLE ORDERS -->
-                    <!-- <button type="button" class="filter-btn" data-filter="accessories">Accessories</button> -->
                 </div>
 
                 <div class="samples-grid" id="samplesGrid">
@@ -671,72 +669,6 @@
                 category: "putting",
                 inStock: true
             }
-            // ACCESSORIES COMMENTED OUT FOR SAMPLE ORDERS - UNCOMMENT FOR FULL ORDER FORM
-            /*
-            ,{
-                name: "Aluminum Golf Cup",
-                specs: "Standard 4.25″ Diameter",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "Golf Ball Basket Small",
-                specs: "Practice Range Equipment",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "Golf Ball Basket Medium",
-                specs: "Practice Range Equipment",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "Golf Ball Basket Large",
-                specs: "Practice Range Equipment",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "Putting Green Cup Cover",
-                specs: "Weather Protection",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "RV Turf Mats",
-                specs: "Custom Cut Available",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "Potty Training Mats (Small)",
-                specs: "Pet Training Solution",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "Potty Training Mats (Medium)",
-                specs: "Pet Training Solution",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            },
-            {
-                name: "Potty Training Mats (Large)",
-                specs: "Pet Training Solution",
-                price: "Contact for pricing",
-                category: "accessories",
-                inStock: true
-            }
-            */
         ];
 
         let selectedSamples = [];
@@ -896,6 +828,10 @@
 
             const formData = new FormData(e.target);
             const orderData = {
+                // Operation filter to identify this as sales form data
+                operation: 'sales_order',
+                form_type: 'sample_order_form',
+                
                 // Flatten the structure for better Make.com compatibility
                 customerName: formData.get('customerName'),
                 customerEmail: formData.get('customerEmail'),
@@ -989,7 +925,8 @@
         }
 
         async function sendToMake(orderData) {
-            const WEBHOOK_URL = 'https://hook.us2.make.com/lktfecpmdv11h6j6hm0xm3vy7cwn1jei';
+            // NEW SALES FORM WEBHOOK URL
+            const WEBHOOK_URL = 'https://hook.us2.make.com/j158s4uo0wpdjmw185saw5962p16qsmf';
             
             try {
                 console.log('Sending data to Make.com webhook:', orderData);
