@@ -394,6 +394,16 @@
                     <h2 class="section-title">Shipping Information</h2>
                     
                     <div class="form-group">
+                        <label for="country">Country <span class="required">*</span></label>
+                        <select id="country" name="country" required>
+                            <option value="">Select Country</option>
+                            <option value="United States of America">United States of America</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Mexico">Mexico</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="shippingAddress">Street Address <span class="required">*</span></label>
                         <input type="text" id="shippingAddress" name="shippingAddress" required>
                     </div>
@@ -838,6 +848,7 @@
                 customerPhone: formData.get('customerPhone'),
                 company: formData.get('company') || '',
                 
+                country: formData.get('country'),
                 shippingAddress: formData.get('shippingAddress'),
                 shippingAddress2: formData.get('shippingAddress2') || '',
                 city: formData.get('city'),
